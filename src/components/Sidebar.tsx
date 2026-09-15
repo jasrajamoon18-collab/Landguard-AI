@@ -92,8 +92,8 @@ export function Sidebar({ currentPage, onNavigate, language, mobileOpen, onClose
         {/* Footer disclaimer */}
         <div className="p-4 border-t border-slate-800 shrink-0">
           <div className="flex items-center gap-2 text-xs text-slate-500">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>{t(language, "demoMode")}</span>
+            <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+            <span className="text-cyan-400 font-medium">{t(language, "demoMode")}</span>
           </div>
           <p className="mt-2 text-[10px] text-slate-600 leading-relaxed">
             {t(language, "demoDisclaimer")}

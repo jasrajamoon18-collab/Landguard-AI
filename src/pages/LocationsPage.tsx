@@ -1,16 +1,17 @@
 import { useState, useMemo } from "react";
 import { MapPin, Search, ArrowUpDown, X } from "lucide-react";
-import { locations, NER_STATES } from "@/data/locations";
+import { NER_STATES } from "@/types/location";
 import { riskColor } from "@/utils/risk";
 import type { Location } from "@/types";
 
 interface LocationsPageProps {
+  locations: Location[];
   onSelectLocation: (id: string) => void;
 }
 
 type SortKey = "riskScore" | "rainfall" | "soilMoisture" | "slope" | "groundMovement" | "name";
 
-export function LocationsPage({ onSelectLocation }: LocationsPageProps) {
+export function LocationsPage({ locations, onSelectLocation }: LocationsPageProps) {
   const [search, setSearch] = useState("");
   const [stateFilter, setStateFilter] = useState("all");
   const [levelFilter, setLevelFilter] = useState("all");
@@ -63,7 +64,7 @@ export function LocationsPage({ onSelectLocation }: LocationsPageProps) {
           <MapPin className="text-cyan-400" /> Monitored Locations
         </h1>
         <p className="text-sm text-slate-500 mt-1">
-          {filtered.length} of {locations.length} locations · DEMO DATA
+          {filtered.length} of {locations.length} monitored locations
         </p>
       </div>
 
@@ -210,6 +211,7 @@ export function LocationsPage({ onSelectLocation }: LocationsPageProps) {
                 { label: "Historical Risk", value: `${selected.historicalRisk}%` },
                 { label: "Latitude", value: selected.lat.toFixed(4) },
                 { label: "Longitude", value: selected.lng.toFixed(4) },
+                { label: "Data Source", value: selected.dataStatus },
               ].map((item) => (
                 <div key={item.label} className="rounded-lg bg-slate-800/50 p-3">
                   <div className="text-xs text-slate-500">{item.label}</div>

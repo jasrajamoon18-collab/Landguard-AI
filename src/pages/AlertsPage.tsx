@@ -1,26 +1,33 @@
 import { useState } from "react";
 import { Bell, Search, CheckCircle, Eye } from "lucide-react";
 import { AlertCard } from "@/components/AlertCard";
-import { alerts as initialAlerts } from "@/data/alerts";
-import { NER_STATES } from "@/data/locations";
+import { NER_STATES } from "@/types/location";
 import { formatDateTime } from "@/utils/format";
 import { riskColor } from "@/utils/risk";
-import type { Alert, PageId, Language } from "@/types";
 import { t } from "@/data/translations";
+import type { Alert, PageId, Language } from "@/types";
 
 interface AlertsPageProps {
   onNavigate: (page: PageId) => void;
   onSelectLocation: (id: string) => void;
   language: Language;
+  alerts: Alert[];
 }
 
-export function AlertsPage({ onSelectLocation, language }: AlertsPageProps) {
+export function AlertsPage({ onSelectLocation, language, alerts: initialAlerts }: AlertsPageProps) {
   const [alertList, setAlertList] = useState<Alert[]>(initialAlerts);
   const [search, setSearch] = useState("");
   const [stateFilter, setStateFilter] = useState("all");
   const [levelFilter, setLevelFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [toast, setToast] = useState<string | null>(null);
+
+  // Sync when alerts prop changes (e.g. after data refresh)
+  const [lastCount, setLastCount] = useState(initialAlerts.length);
+  if (initialAlerts.length !== lastCount) {
+    setLastCount(initialAlerts.length);
+    setAlertList(initialAlerts);
+  }
 
   const filtered = alertList.filter((a) => {
     const matchesSearch = a.locationName.toLowerCase().includes(search.toLowerCase()) ||
@@ -49,7 +56,7 @@ export function AlertsPage({ onSelectLocation, language }: AlertsPageProps) {
     } else {
       navigator.clipboard?.writeText(text).catch(() => {});
     }
-    showToast(`Alert details copied to clipboard`);
+    showToast("Alert details copied to clipboard");
   };
 
   const handleView = (alert: Alert) => {
@@ -68,7 +75,7 @@ export function AlertsPage({ onSelectLocation, language }: AlertsPageProps) {
           <Bell className="text-cyan-400" /> {t(language, "earlyWarning")}
         </h1>
         <p className="text-sm text-slate-500 mt-1">
-          Simulated early warning alerts · DEMO DATA · No real notifications are sent
+          Alerts generated from calculated risk scores · No real notifications are sent
         </p>
       </div>
 
@@ -98,7 +105,6 @@ export function AlertsPage({ onSelectLocation, language }: AlertsPageProps) {
       <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
         <h2 className="text-sm font-semibold text-slate-400 mb-3">Alert History</h2>
 
-        {/* Filters */}
         <div className="flex flex-wrap gap-2 mb-4">
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/60 border border-slate-700 flex-1 min-w-[180px]">
             <Search size={14} className="text-slate-500" />
@@ -139,6 +145,7 @@ export function AlertsPage({ onSelectLocation, language }: AlertsPageProps) {
                 <th className="py-2 pr-4">Level</th>
                 <th className="py-2 pr-4">Score</th>
                 <th className="py-2 pr-4 hidden md:table-cell">Reason</th>
+                <th className="py-2 pr-4 hidden lg:table-cell">Source</th>
                 <th className="py-2 pr-4">Status</th>
               </tr>
             </thead>
@@ -155,6 +162,15 @@ export function AlertsPage({ onSelectLocation, language }: AlertsPageProps) {
                   </td>
                   <td className="py-2.5 pr-4 font-bold" style={{ color: riskColor(a.riskLevel) }}>{a.riskScore}</td>
                   <td className="py-2.5 pr-4 text-slate-400 hidden md:table-cell max-w-xs truncate">{a.reason}</td>
+                  <td className="py-2.5 pr-4 hidden lg:table-cell">
+                    <span className={`text-xs px-1.5 py-0.5 rounded ${
+                      a.dataSource === "LIVE" ? "bg-emerald-500/10 text-emerald-400" :
+                      a.dataSource === "SIMULATION" ? "bg-orange-500/10 text-orange-400" :
+                      "bg-yellow-500/10 text-yellow-400"
+                    }`}>
+                      {a.dataSource}
+                    </span>
+                  </td>
                   <td className="py-2.5 pr-4">
                     <span className={`text-xs font-medium px-2 py-0.5 rounded ${
                       a.status === "ACTIVE" ? "bg-red-500/10 text-red-400" :
@@ -171,7 +187,6 @@ export function AlertsPage({ onSelectLocation, language }: AlertsPageProps) {
         </div>
       </div>
 
-      {/* Toast */}
       {toast && (
         <div className="fixed bottom-6 right-6 z-50 rounded-lg bg-slate-800 border border-slate-600 px-4 py-3 text-sm text-slate-200 shadow-xl flex items-center gap-2">
           <Eye size={16} className="text-cyan-400" />

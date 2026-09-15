@@ -3,26 +3,36 @@ import { RiskCard } from "@/components/RiskCard";
 import { RiskGauge } from "@/components/RiskGauge";
 import { RiskMap } from "@/components/RiskMap";
 import { TrendChart, SimpleBarChart } from "@/components/RiskChart";
-import { locations, NER_STATES } from "@/data/locations";
-import { generateRiskTrend } from "@/data/sensors";
-import type { PageId, Language } from "@/types";
-import { t } from "@/data/translations";
+import { DataStatusBadge } from "@/components/DataStatusBadge";
+import { ImergRainfallPanel } from "@/components/ImergRainfallPanel";
+import { NER_STATES } from "@/types/location";
+import { getHistoricalRiskByState } from "@/services/historicalRiskService";
+import { generateFallbackSensorHistory } from "@/data/fallbackData";
+import type { PageId, Language, Location, DataStatus } from "@/types";
 
 interface DashboardProps {
   onNavigate: (page: PageId) => void;
   onSelectLocation: (id: string) => void;
   language: Language;
   regionScore: number;
+  locations: Location[];
+  dataStatus: DataStatus;
+  onRefresh?: () => void;
+  loading?: boolean;
 }
 
-export function Dashboard({ onNavigate, onSelectLocation, language, regionScore }: DashboardProps) {
+export function Dashboard({ onNavigate, onSelectLocation, language, regionScore, locations, dataStatus, onRefresh, loading }: DashboardProps) {
   const low = locations.filter((l) => l.riskLevel === "LOW").length;
   const moderate = locations.filter((l) => l.riskLevel === "MODERATE").length;
   const high = locations.filter((l) => l.riskLevel === "HIGH").length;
   const critical = locations.filter((l) => l.riskLevel === "CRITICAL").length;
 
   const topLocations = [...locations].sort((a, b) => b.riskScore - a.riskScore).slice(0, 5);
-  const trendData = generateRiskTrend(7);
+
+  const trendLoc = topLocations[0] ?? locations[0];
+  const trendData = trendLoc
+    ? generateFallbackSensorHistory(trendLoc.id, 7).map((p) => ({ day: p.time, risk: p.riskScore }))
+    : [];
 
   const stateRiskData = NER_STATES.map((state) => {
     const stateLocs = locations.filter((l) => l.state === state);
@@ -34,21 +44,26 @@ export function Dashboard({ onNavigate, onSelectLocation, language, regionScore 
 
   return (
     <div className="space-y-6">
-      {/* Title */}
-      <div>
-        <h1 className="text-2xl font-bold text-slate-100">North Eastern Region — Landslide Risk Monitoring</h1>
-        <p className="text-sm text-slate-500 mt-1">
-          Real-time overview of simulated landslide risk across 8 NER states · DEMO DATA
-        </p>
+      <div className="flex items-start justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-100">North Eastern Region — Landslide Risk Monitoring</h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Overview of landslide risk across {NER_STATES.length} NER states · {locations.length} monitored locations
+          </p>
+        </div>
+        <DataStatusBadge status={dataStatus} language={language} size="md" />
       </div>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <RiskCard level="LOW" count={142 + low - locations.length} icon={ShieldCheck} />
-        <RiskCard level="MODERATE" count={38 + moderate - 5} icon={ShieldAlert} />
-        <RiskCard level="HIGH" count={21 + high - 5} icon={AlertTriangle} />
-        <RiskCard level="CRITICAL" count={7 + critical - 2} icon={AlertOctagon} />
+        <RiskCard level="LOW" count={low} icon={ShieldCheck} />
+        <RiskCard level="MODERATE" count={moderate} icon={ShieldAlert} />
+        <RiskCard level="HIGH" count={high} icon={AlertTriangle} />
+        <RiskCard level="CRITICAL" count={critical} icon={AlertOctagon} />
       </div>
+
+      {/* NASA IMERG Rainfall Panel */}
+      <ImergRainfallPanel locations={locations} dataStatus={dataStatus} onRefresh={onRefresh} loading={loading} />
 
       {/* Gauge + Map */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -103,7 +118,7 @@ export function Dashboard({ onNavigate, onSelectLocation, language, regionScore 
                 <th className="py-2 pr-4">State</th>
                 <th className="py-2 pr-4">Risk Score</th>
                 <th className="py-2 pr-4">Level</th>
-                <th className="py-2 pr-4">Rainfall</th>
+                <th className="py-2 pr-4">Rainfall (24h)</th>
               </tr>
             </thead>
             <tbody>

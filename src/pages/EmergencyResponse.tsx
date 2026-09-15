@@ -1,14 +1,14 @@
 import { Siren, AlertOctagon, ShieldAlert, ListChecks, Phone, MapPin } from "lucide-react";
-import { locations } from "@/data/locations";
 import { riskColor } from "@/utils/risk";
-import type { PageId } from "@/types";
+import type { PageId, Location } from "@/types";
 
 interface EmergencyResponseProps {
   onNavigate: (page: PageId) => void;
   onSelectLocation: (id: string) => void;
+  locations: Location[];
 }
 
-export function EmergencyResponse({ onNavigate, onSelectLocation }: EmergencyResponseProps) {
+export function EmergencyResponse({ onNavigate, onSelectLocation, locations }: EmergencyResponseProps) {
   const critical = locations.filter((l) => l.riskLevel === "CRITICAL");
   const high = locations.filter((l) => l.riskLevel === "HIGH");
   const moderate = locations.filter((l) => l.riskLevel === "MODERATE");

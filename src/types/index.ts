@@ -1,82 +1,21 @@
-export type RiskLevel = "LOW" | "MODERATE" | "HIGH" | "CRITICAL";
+// Barrel re-export for backward compatibility with existing imports
+import type { RiskLevel } from "./risk";
+export type { RiskLevel, RiskInputs, RiskResult, RiskFactor, RiskData, PredictionResult, RiskPredictRequest, RiskPredictResponse } from "./risk";
+export type { NERState, LocationBase, Location, DataStatus, DataSourceInfo } from "./location";
+export type { WeatherData, WeatherServiceConfig } from "./weather";
+export type { Alert } from "./alert";
+export type {
+  ImergData,
+  ImergProduct,
+  ImergRun,
+  ImergRainfallWindows,
+  ImergLocationData,
+  ImergProxyResponse,
+  ImergDebugInfo,
+} from "./imerg";
+export { NER_STATES } from "./location";
 
-export type NERState =
-  | "Arunachal Pradesh"
-  | "Assam"
-  | "Meghalaya"
-  | "Manipur"
-  | "Mizoram"
-  | "Nagaland"
-  | "Tripura"
-  | "Sikkim";
-
-export interface Location {
-  id: string;
-  name: string;
-  state: NERState;
-  lat: number;
-  lng: number;
-  rainfall: number; // mm
-  soilMoisture: number; // %
-  slope: number; // degrees
-  elevation: number; // meters
-  groundMovement: number; // mm
-  historicalRisk: number; // %
-  riskScore: number; // 0-100
-  riskLevel: RiskLevel;
-  status: "MONITORING" | "ALERT" | "CRITICAL";
-}
-
-export interface RiskData {
-  score: number;
-  level: RiskLevel;
-  contributions: {
-    rainfall: number;
-    soilMoisture: number;
-    slope: number;
-    groundMovement: number;
-    historicalRisk: number;
-  };
-}
-
-export interface SensorData {
-  rainfall: number;
-  soilMoisture: number;
-  groundMovement: number;
-  temperature: number;
-  weather: string;
-  riskScore: number;
-  riskLevel: RiskLevel;
-  timestamp: string;
-}
-
-export interface Alert {
-  id: string;
-  time: string;
-  locationId: string;
-  locationName: string;
-  state: NERState;
-  riskLevel: RiskLevel;
-  riskScore: number;
-  reason: string;
-  status: "ACTIVE" | "ACKNOWLEDGED" | "RESOLVED";
-  factors: string[];
-  action: string;
-}
-
-export interface PredictionResult {
-  score: number;
-  level: RiskLevel;
-  contributions: {
-    rainfall: number;
-    soilMoisture: number;
-    slope: number;
-    groundMovement: number;
-    historicalRisk: number;
-  };
-  explanation: string;
-}
-
+// UI-only types kept here
 export type PageId =
   | "dashboard"
   | "map"
@@ -89,3 +28,23 @@ export type PageId =
   | "about";
 
 export type Language = "en" | "hi" | "as";
+
+// Legacy SensorData interface (used by simulation + monitoring)
+export interface SensorData {
+  rainfall: number;
+  soilMoisture: number;
+  groundMovement: number;
+  temperature: number;
+  weather: string;
+  riskScore: number;
+  riskLevel: RiskLevel;
+  timestamp: string;
+}
+
+export interface SensorHistoryPoint {
+  time: string;
+  rainfall: number;
+  soilMoisture: number;
+  groundMovement: number;
+  riskScore: number;
+}

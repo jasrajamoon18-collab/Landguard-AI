@@ -34,6 +34,13 @@ export function AlertCard({ alert, onView, onAcknowledge, onShare }: AlertCardPr
               {alert.riskLevel} ALERT
             </span>
             <span className="text-xs text-slate-500">{formatDateTime(new Date(alert.time))}</span>
+            <span className={`text-xs px-1.5 py-0.5 rounded ${
+              alert.dataSource === "LIVE" ? "bg-emerald-500/10 text-emerald-400" :
+              alert.dataSource === "SIMULATION" ? "bg-orange-500/10 text-orange-400" :
+              "bg-yellow-500/10 text-yellow-400"
+            }`}>
+              {alert.dataSource}
+            </span>
           </div>
           <h3 className="mt-2 text-lg font-semibold text-slate-100">{alert.locationName}</h3>
           <div className="flex items-center gap-1 text-sm text-slate-400">

@@ -1,26 +1,30 @@
 import { useState } from "react";
 import { Map as MapIcon, Search } from "lucide-react";
 import { RiskMap } from "@/components/RiskMap";
-import { locations, NER_STATES } from "@/data/locations";
+import { DataStatusBadge } from "@/components/DataStatusBadge";
+import { NER_STATES } from "@/types/location";
 import { riskColor } from "@/utils/risk";
-import type { NERState } from "@/types";
+import type { Location, DataStatus, Language } from "@/types";
 
 interface MapPageProps {
+  locations: Location[];
   onSelectLocation: (id: string) => void;
+  dataStatus: DataStatus;
 }
 
-export function MapPage({ onSelectLocation }: MapPageProps) {
+export function MapPage({ locations, onSelectLocation, dataStatus }: MapPageProps) {
   const [search, setSearch] = useState("");
   const [stateFilter, setStateFilter] = useState<string>("all");
+  const [levelFilter, setLevelFilter] = useState<string>("all");
+  const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
 
   const filtered = locations.filter((l) => {
     const matchesSearch = l.name.toLowerCase().includes(search.toLowerCase()) ||
       l.state.toLowerCase().includes(search.toLowerCase());
     const matchesState = stateFilter === "all" || l.state === stateFilter;
-    return matchesSearch && matchesState;
+    const matchesLevel = levelFilter === "all" || l.riskLevel === levelFilter;
+    return matchesSearch && matchesState && matchesLevel;
   });
-
-  const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
 
   const handleSelect = (id: string) => {
     setSelectedId(id);
@@ -29,13 +33,16 @@ export function MapPage({ onSelectLocation }: MapPageProps) {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-100 flex items-center gap-2">
-          <MapIcon className="text-cyan-400" /> Interactive GIS Risk Map
-        </h1>
-        <p className="text-sm text-slate-500 mt-1">
-          {filtered.length} monitored locations across NER · Click markers for details · DEMO DATA
-        </p>
+      <div className="flex items-start justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-100 flex items-center gap-2">
+            <MapIcon className="text-cyan-400" /> Interactive GIS Risk Map
+          </h1>
+          <p className="text-sm text-slate-500 mt-1">
+            {filtered.length} of {locations.length} monitored locations · Click markers for details
+          </p>
+        </div>
+        <DataStatusBadge status={dataStatus} size="md" />
       </div>
 
       {/* Filters */}
@@ -59,6 +66,17 @@ export function MapPage({ onSelectLocation }: MapPageProps) {
           {NER_STATES.map((s) => (
             <option key={s} value={s} className="bg-slate-800">{s}</option>
           ))}
+        </select>
+        <select
+          value={levelFilter}
+          onChange={(e) => setLevelFilter(e.target.value)}
+          className="px-3 py-2 rounded-lg bg-slate-900/60 border border-slate-800 text-sm text-slate-200 outline-none cursor-pointer"
+        >
+          <option value="all" className="bg-slate-800">All Risk Levels</option>
+          <option value="LOW" className="bg-slate-800">Low</option>
+          <option value="MODERATE" className="bg-slate-800">Moderate</option>
+          <option value="HIGH" className="bg-slate-800">High</option>
+          <option value="CRITICAL" className="bg-slate-800">Critical</option>
         </select>
       </div>
 

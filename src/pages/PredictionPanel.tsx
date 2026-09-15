@@ -2,14 +2,14 @@ import { useState, useEffect } from "react";
 import { CloudRain, Droplets, Mountain, Move3D, History, Milestone, Brain, Cpu, Database } from "lucide-react";
 import { RiskGauge } from "@/components/RiskGauge";
 import { ExplainableRisk } from "@/components/ExplainableRisk";
-import { predictRiskService } from "@/services/api";
-import { getLocationById } from "@/services/api";
+import { predictRisk } from "@/services/riskService";
 import { t } from "@/data/translations";
-import type { PredictionResult, Language } from "@/types";
+import type { PredictionResult, Language, Location } from "@/types";
 
 interface PredictionPanelProps {
   preselectedLocationId?: string | null;
   language: Language;
+  locations: Location[];
 }
 
 interface InputConfig {
@@ -40,14 +40,14 @@ const DEFAULT_INPUTS = {
   historicalRisk: 50,
 };
 
-export function PredictionPanel({ preselectedLocationId, language }: PredictionPanelProps) {
+export function PredictionPanel({ preselectedLocationId, language, locations }: PredictionPanelProps) {
   const [inputs, setInputs] = useState(DEFAULT_INPUTS);
   const [result, setResult] = useState<PredictionResult | null>(null);
   const [selectedName, setSelectedName] = useState<string | null>(null);
 
   useEffect(() => {
     if (preselectedLocationId) {
-      const loc = getLocationById(preselectedLocationId);
+      const loc = locations.find((l) => l.id === preselectedLocationId);
       if (loc) {
         setInputs({
           rainfall: loc.rainfall,
@@ -58,7 +58,7 @@ export function PredictionPanel({ preselectedLocationId, language }: PredictionP
           historicalRisk: loc.historicalRisk,
         });
         setSelectedName(loc.name);
-        const res = predictRiskService({
+        const res = predictRisk({
           rainfall: loc.rainfall,
           soilMoisture: loc.soilMoisture,
           slope: loc.slope,
@@ -69,10 +69,10 @@ export function PredictionPanel({ preselectedLocationId, language }: PredictionP
         setResult(res);
       }
     }
-  }, [preselectedLocationId]);
+  }, [preselectedLocationId, locations]);
 
   const handleAnalyze = () => {
-    const res = predictRiskService(inputs);
+    const res = predictRisk(inputs);
     setResult(res);
   };
 
@@ -87,7 +87,7 @@ export function PredictionPanel({ preselectedLocationId, language }: PredictionP
           <Brain className="text-cyan-400" /> AI Landslide Risk Prediction
         </h1>
         <p className="text-sm text-slate-500 mt-1">
-          Prototype AI Risk Engine — transparent weighted scoring model · DEMO DATA
+          Prototype Risk Engine — transparent weighted scoring model
         </p>
       </div>
 
@@ -181,12 +181,12 @@ export function PredictionPanel({ preselectedLocationId, language }: PredictionP
                   <div className="mt-4 text-center">
                     <p className="text-sm text-slate-400 max-w-xs">
                       {result.level === "CRITICAL"
-                        ? "Current simulated environmental conditions indicate critical landslide risk."
+                        ? "Current conditions indicate critical landslide risk."
                         : result.level === "HIGH"
-                        ? "Current simulated environmental conditions indicate elevated landslide risk."
+                        ? "Current conditions indicate elevated landslide risk."
                         : result.level === "MODERATE"
-                        ? "Current simulated environmental conditions indicate moderate landslide risk."
-                        : "Current simulated environmental conditions indicate low landslide risk."}
+                        ? "Current conditions indicate moderate landslide risk."
+                        : "Current conditions indicate low landslide risk."}
                     </p>
                   </div>
                 </div>
@@ -203,16 +203,21 @@ export function PredictionPanel({ preselectedLocationId, language }: PredictionP
                     <Cpu size={14} className="text-slate-500" />
                     <div>
                       <div className="text-slate-500">Model</div>
-                      <div className="text-slate-300 font-medium">Prototype Risk Engine</div>
+                      <div className="text-slate-300 font-medium">{result.model ?? "Prototype Risk Engine"}</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <Database size={14} className="text-slate-500" />
                     <div>
                       <div className="text-slate-500">Data</div>
-                      <div className="text-slate-300 font-medium">Simulated Demo Data</div>
+                      <div className="text-slate-300 font-medium">Simulated / Fallback</div>
                     </div>
                   </div>
+                </div>
+                <div className="mt-3 p-2 rounded bg-slate-800/40">
+                  <p className="text-[10px] text-slate-500 leading-relaxed">
+                    Replace this prototype calculation with a validated Random Forest/XGBoost model after training and evaluation on appropriate historical datasets.
+                  </p>
                 </div>
               </div>
             </>

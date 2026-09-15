@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
-import { t } from "@/data/translations";
-import type { Language, PageId } from "@/types";
+import type { Language, PageId, DataStatus } from "@/types";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -12,9 +11,17 @@ interface LayoutProps {
   language: Language;
   onLanguageChange: (lang: Language) => void;
   regionScore: number;
+  dataStatus: DataStatus;
+  onRefresh: () => void;
+  loading: boolean;
+  lastRefresh: Date;
+  error: string | null;
 }
 
-export function Layout({ children, currentPage, onNavigate, language, onLanguageChange, regionScore }: LayoutProps) {
+export function Layout({
+  children, currentPage, onNavigate, language, onLanguageChange,
+  regionScore, dataStatus, onRefresh, loading, lastRefresh, error,
+}: LayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
@@ -37,7 +44,6 @@ export function Layout({ children, currentPage, onNavigate, language, onLanguage
       </div>
 
       <div className="flex">
-        {/* Sidebar - desktop */}
         <Sidebar
           currentPage={currentPage}
           onNavigate={onNavigate}
@@ -46,14 +52,22 @@ export function Layout({ children, currentPage, onNavigate, language, onLanguage
           onCloseMobile={() => setMobileOpen(false)}
         />
 
-        {/* Main content */}
         <div className="flex-1 min-w-0 lg:ml-64">
           <Header
             language={language}
             onLanguageChange={onLanguageChange}
             regionScore={regionScore}
+            dataStatus={dataStatus}
+            onRefresh={onRefresh}
+            loading={loading}
+            lastRefresh={lastRefresh}
           />
           <main className="p-4 sm:p-6 lg:p-8 mt-14 lg:mt-0">
+            {error && (
+              <div className="mb-4 rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-3 text-sm text-yellow-400">
+                {error}
+              </div>
+            )}
             {children}
           </main>
         </div>

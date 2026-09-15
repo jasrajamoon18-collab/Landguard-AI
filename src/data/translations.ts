@@ -22,7 +22,13 @@ type TranslationKey =
   | "analyzeRisk"
   | "startSimulation"
   | "pauseSimulation"
-  | "resetSimulation";
+  | "resetSimulation"
+  | "refreshData"
+  | "liveData"
+  | "fallbackData"
+  | "simulationMode"
+  | "errorData"
+  | "prototypeBadge";
 
 type TranslationDict = Record<TranslationKey, string>;
 
@@ -31,15 +37,21 @@ export const translations: Record<Language, TranslationDict> = {
     dashboard: "Dashboard",
     map: "Risk Map",
     prediction: "AI Prediction",
-    monitoring: "Live Monitoring",
+    monitoring: "Monitoring",
     alerts: "Alerts",
     locations: "Locations",
     analytics: "Analytics",
     emergency: "Emergency Response",
     about: "About",
     systemOnline: "System Online",
-    demoMode: "DEMO / SIMULATION MODE",
-    demoDisclaimer: "Prototype estimates only. This system is NOT intended for real-world emergency decisions.",
+    demoMode: "PROTOTYPE / EARLY-WARNING RESEARCH SYSTEM",
+    demoDisclaimer: "Not for real-world emergency decisions. Follow official disaster-management authorities.",
+    refreshData: "Refresh Data",
+    liveData: "LIVE DATA",
+    fallbackData: "FALLBACK DATA",
+    simulationMode: "SIMULATION MODE",
+    errorData: "ERROR",
+    prototypeBadge: "PROTOTYPE",
     earlyWarning: "Early Warning Alerts",
     criticalAlert: "Critical Alert",
     viewLocation: "View Location",
@@ -55,15 +67,21 @@ export const translations: Record<Language, TranslationDict> = {
     dashboard: "डैशबोर्ड",
     map: "जोखिम मानचित्र",
     prediction: "एआई पूर्वानुमान",
-    monitoring: "लाइव निगरानी",
+    monitoring: "निगरानी",
     alerts: "अलर्ट",
     locations: "स्थान",
     analytics: "विश्लेषण",
     emergency: "आपातकालीन प्रतिक्रिया",
     about: "परिचय",
     systemOnline: "सिस्टम ऑनलाइन",
-    demoMode: "डेमो / सिमुलेशन मोड",
-    demoDisclaimer: "केवल प्रोटोटाइप अनुमान। यह प्रणाली वास्तविक आपातकालीन निर्णयों के लिए नहीं है।",
+    demoMode: "प्रोटोटाइप / प्रारंभिक चेतावनी अनुसंधान प्रणाली",
+    demoDisclaimer: "वास्तविक आपातकालीन निर्णयों के लिए नहीं। आधिकारिक आपदा प्रबंधन अधिकारियों का पालन करें।",
+    refreshData: "डेटा रिफ्रेश करें",
+    liveData: "लाइव डेटा",
+    fallbackData: "फॉलबैक डेटा",
+    simulationMode: "सिमुलेशन मोड",
+    errorData: "त्रुटि",
+    prototypeBadge: "प्रोटोटाइप",
     earlyWarning: "प्रारंभिक चेतावनी अलर्ट",
     criticalAlert: "गंभीर अलर्ट",
     viewLocation: "स्थान देखें",
@@ -79,15 +97,21 @@ export const translations: Record<Language, TranslationDict> = {
     dashboard: "ডেচবোৰ্ড",
     map: "বিপদ মানচিত্ৰ",
     prediction: "এআই পূৰ্বানুমান",
-    monitoring: "লাইভ নিৰীক্ষণ",
+    monitoring: "নিৰীক্ষণ",
     alerts: "সতৰ্কতা",
     locations: "স্থানসমূহ",
     analytics: "বিশ্লেষণ",
     emergency: "জৰুৰীকালীন প্ৰতিক্ৰিয়া",
     about: "বিষয়ে",
     systemOnline: "চিছটেম অনলাইন",
-    demoMode: "ডেমো / ছিমুলেচন মোড",
-    demoDisclaimer: "কেৱল প্ৰটটাইপ অনুমান। এই ব্যৱস্থা বাস্তৱ জৰুৰীকালীন সিদ্ধান্তৰ বাবে নহয়।",
+    demoMode: "প্ৰটটাইপ / প্ৰাৰম্ভিক সতৰ্কতা গৱেষণা ব্যৱস্থা",
+    demoDisclaimer: "বাস্তৱ জৰুৰীকালীন সিদ্ধান্তৰ বাবে নহয়। আধিকাৰিক দুৰ্যোগ ব্যৱস্থাপনা কৰ্তৃপক্ষক অনুসৰণ কৰক।",
+    refreshData: "ডেটা সতেজ কৰক",
+    liveData: "লাইভ ডেটা",
+    fallbackData: "ফলবেক ডেটা",
+    simulationMode: "ছিমুলেচন মোড",
+    errorData: "ভুল",
+    prototypeBadge: "প্ৰটটাইপ",
     earlyWarning: "প্ৰাৰম্ভিক সতৰ্কতা",
     criticalAlert: "গুৰুতৰ সতৰ্কতা",
     viewLocation: "স্থান চাওক",

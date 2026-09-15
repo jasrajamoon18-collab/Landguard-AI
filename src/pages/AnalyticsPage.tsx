@@ -1,10 +1,18 @@
 import { BarChart3 } from "lucide-react";
 import { SimpleBarChart, RiskPieChart, MultiLineChart } from "@/components/RiskChart";
-import { locations, NER_STATES } from "@/data/locations";
-import { generateRiskTrend, generateAlertFrequency } from "@/data/sensors";
+import { NER_STATES } from "@/types/location";
 import { riskColor } from "@/utils/risk";
+import { generateFallbackSensorHistory } from "@/data/fallbackData";
+import { generateAlertFrequencyFromAlerts } from "@/services/alertService";
+import { getHistoricalRiskByState } from "@/services/historicalRiskService";
+import type { Location, Alert } from "@/types";
 
-export function AnalyticsPage() {
+interface AnalyticsPageProps {
+  locations: Location[];
+  alerts: Alert[];
+}
+
+export function AnalyticsPage({ locations, alerts }: AnalyticsPageProps) {
   const distribution = [
     { name: "Low", value: locations.filter((l) => l.riskLevel === "LOW").length, color: riskColor("LOW") },
     { name: "Moderate", value: locations.filter((l) => l.riskLevel === "MODERATE").length, color: riskColor("MODERATE") },
@@ -26,8 +34,17 @@ export function AnalyticsPage() {
     risk: l.riskScore,
   }));
 
-  const riskTrend = generateRiskTrend(7).map((d) => ({ ...d, day: d.day }));
-  const alertFreq = generateAlertFrequency(7);
+  // Risk trend from deterministic fallback history of highest-risk location
+  const topLoc = [...locations].sort((a, b) => b.riskScore - a.riskScore)[0];
+  const riskTrend = topLoc
+    ? generateFallbackSensorHistory(topLoc.id, 7).map((p) => ({ day: p.time, risk: p.riskScore }))
+    : [];
+
+  // Alert frequency calculated from actual alert list
+  const alertFreq = generateAlertFrequencyFromAlerts(alerts, 7);
+
+  // Historical risk by state (separate from live data)
+  const histByState = getHistoricalRiskByState();
 
   return (
     <div className="space-y-6">
@@ -36,7 +53,7 @@ export function AnalyticsPage() {
           <BarChart3 className="text-cyan-400" /> Analytics
         </h1>
         <p className="text-sm text-slate-500 mt-1">
-          Risk analytics and trends · All charts use DEMO DATA
+          Risk analytics calculated from application data · {locations.length} locations, {alerts.length} alerts
         </p>
       </div>
 
@@ -49,7 +66,7 @@ export function AnalyticsPage() {
 
         {/* State-wise Risk */}
         <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
-          <h2 className="text-sm font-semibold text-slate-400 mb-3">State-wise Average Risk</h2>
+          <h2 className="text-sm font-semibold text-slate-400 mb-3">State-wise Average Risk (Current)</h2>
           <SimpleBarChart data={stateRisk} xKey="state" yKey="risk" color="#06b6d4" height={260} />
         </div>
 
@@ -74,14 +91,26 @@ export function AnalyticsPage() {
         </div>
 
         {/* Alert Frequency */}
-        <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 lg:col-span-2">
+        <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
           <h2 className="text-sm font-semibold text-slate-400 mb-3">Alert Frequency by Day</h2>
           <SimpleBarChart data={alertFreq} xKey="day" yKey="alerts" color="#ef4444" height={240} />
+        </div>
+
+        {/* Historical Risk by State */}
+        <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
+          <h2 className="text-sm font-semibold text-slate-400 mb-3">Historical Landslide Risk by State</h2>
+          <SimpleBarChart
+            data={histByState.map((s) => ({ state: s.state.replace(" Pradesh", "").slice(0, 8), risk: s.avgRisk }))}
+            xKey="state"
+            yKey="risk"
+            color="#a855f7"
+            height={240}
+          />
         </div>
       </div>
 
       <p className="text-center text-xs text-slate-600">
-        All data shown is simulated for demonstration purposes.
+        Analytics calculated from current application data. Historical risk uses sample data.
       </p>
     </div>
   );

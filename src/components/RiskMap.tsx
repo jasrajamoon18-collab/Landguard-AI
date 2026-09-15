@@ -43,12 +43,10 @@ export function RiskMap({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Update markers when locations change
   useEffect(() => {
     const map = mapInstance.current;
     if (!map) return;
 
-    // Remove old markers
     Object.values(markersRef.current).forEach((m) => m.remove());
     markersRef.current = {};
 
@@ -66,30 +64,46 @@ export function RiskMap({
         fillOpacity: 0.8,
       }).addTo(map);
 
+      const dataStatusColor = loc.dataStatus === "LIVE" ? "#22c55e" : loc.dataStatus === "SIMULATION" ? "#f97316" : loc.dataStatus === "ERROR" ? "#ef4444" : "#eab308";
+      const imerg = loc.imerg;
+      const imergSection = imerg
+        ? `<div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #e2e8f0; font-size: 11px; color: #475569; line-height: 1.6;">
+             <div style="font-weight: 600; color: #0891b2; margin-bottom: 4px;">NASA IMERG Rainfall</div>
+             <div>30 min: <b>${imerg.precipitation30min.toFixed(1)} mm</b></div>
+             <div>3 hour: <b>${imerg.precipitation3h.toFixed(1)} mm</b></div>
+             <div>24 hour: <b>${imerg.precipitation24h.toFixed(1)} mm</b></div>
+             <div>3 day: <b>${imerg.precipitation3d.toFixed(1)} mm</b></div>
+             <div>7 day: <b>${imerg.precipitation7d.toFixed(1)} mm</b></div>
+             <div style="margin-top: 4px; font-size: 10px; color: #94a3b8;">${imerg.product} · ${imerg.run}</div>
+           </div>`
+        : "";
+
       const popupContent = `
-        <div style="font-family: sans-serif; min-width: 200px; color: #1e293b;">
+        <div style="font-family: sans-serif; min-width: 240px; color: #1e293b;">
           <div style="font-weight: 700; font-size: 14px; margin-bottom: 4px;">${loc.name}</div>
           <div style="font-size: 11px; color: #64748b; margin-bottom: 8px;">${loc.state}</div>
           <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
             <div style="width: 28px; height: 28px; border-radius: 50%; background: ${color}; display: flex; align-items: center; justify-items: center; color: white; font-weight: 700; font-size: 12px; line-height: 28px; text-align: center;">${loc.riskScore}</div>
             <div style="font-size: 12px; font-weight: 600; color: ${color};">${loc.riskLevel}</div>
+            <div style="margin-left: auto; font-size: 10px; font-weight: 600; color: ${dataStatusColor}; border: 1px solid ${dataStatusColor}; border-radius: 10px; padding: 1px 6px;">${loc.dataStatus}</div>
           </div>
           <div style="font-size: 11px; color: #475569; line-height: 1.6;">
-            <div>Rainfall: <b>${loc.rainfall} mm</b></div>
+            <div>Rainfall (24h): <b>${loc.rainfall} mm</b></div>
             <div>Soil Moisture: <b>${loc.soilMoisture}%</b></div>
             <div>Slope: <b>${loc.slope}&deg;</b></div>
             <div>Ground Movement: <b>+${loc.groundMovement} mm</b></div>
             <div>Elevation: <b>${loc.elevation} m</b></div>
+            <div>Historical Risk: <b>${loc.historicalRisk}%</b></div>
           </div>
-          ${onSelectLocation ? `<button onclick="document.dispatchEvent(new CustomEvent('mapselect', {detail: '${loc.id}'}))" style="margin-top: 10px; width: 100%; padding: 6px 12px; background: #0891b2; color: white; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">View AI Analysis</button>` : ""}
+          ${imergSection}
+          ${onSelectLocation ? `<button onclick="document.dispatchEvent(new CustomEvent('mapselect', {detail: '${loc.id}'}))" style="margin-top: 10px; width: 100%; padding: 6px 12px; background: #0891b2; color: white; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">Analyze this location</button>` : ""}
         </div>
       `;
-      marker.bindPopup(popupContent, { maxWidth: 280 });
+      marker.bindPopup(popupContent, { maxWidth: 300 });
       markersRef.current[loc.id] = marker;
     });
   }, [locations, highlightId, onSelectLocation]);
 
-  // Listen for popup button clicks
   useEffect(() => {
     if (!onSelectLocation) return;
     const handler = (e: Event) => {
