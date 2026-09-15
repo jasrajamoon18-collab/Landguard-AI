@@ -10,6 +10,11 @@ import {
   Info,
   Shield,
   X,
+  ShieldPlus,
+  Settings,
+  History,
+  ShieldAlert,
+  Users,
 } from "lucide-react";
 import { t } from "@/data/translations";
 import type { Language, PageId } from "@/types";
@@ -22,16 +27,37 @@ interface SidebarProps {
   onCloseMobile: () => void;
 }
 
-const navItems: { id: PageId; icon: React.ElementType }[] = [
-  { id: "dashboard", icon: LayoutDashboard },
-  { id: "map", icon: Map },
-  { id: "prediction", icon: Brain },
-  { id: "monitoring", icon: Activity },
-  { id: "alerts", icon: Bell },
-  { id: "locations", icon: MapPin },
-  { id: "analytics", icon: BarChart3 },
-  { id: "emergency", icon: Siren },
-  { id: "about", icon: Info },
+const navSections: { label: string; items: { id: PageId; icon: React.ElementType }[] }[] = [
+  {
+    label: "Monitoring",
+    items: [
+      { id: "dashboard", icon: LayoutDashboard },
+      { id: "map", icon: Map },
+      { id: "prediction", icon: Brain },
+      { id: "monitoring", icon: Activity },
+      { id: "alerts", icon: Bell },
+      { id: "locations", icon: MapPin },
+      { id: "analytics", icon: BarChart3 },
+      { id: "emergency", icon: Siren },
+    ],
+  },
+  {
+    label: "Protection",
+    items: [
+      { id: "register", icon: ShieldPlus },
+      { id: "myalerts", icon: Shield },
+      { id: "alert-settings", icon: Settings },
+      { id: "alert-history", icon: History },
+      { id: "emergency-info", icon: ShieldAlert },
+    ],
+  },
+  {
+    label: "System",
+    items: [
+      { id: "admin", icon: Users },
+      { id: "about", icon: Info },
+    ],
+  },
 ];
 
 export function Sidebar({ currentPage, onNavigate, language, mobileOpen, onCloseMobile }: SidebarProps) {
@@ -68,25 +94,32 @@ export function Sidebar({ currentPage, onNavigate, language, mobileOpen, onClose
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = currentPage === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => onNavigate(item.id)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                  isActive
-                    ? "bg-cyan-500/10 text-cyan-400 border-l-2 border-cyan-400"
-                    : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
-                }`}
-              >
-                <Icon size={18} className="shrink-0" />
-                <span className="truncate">{t(language, item.id)}</span>
-              </button>
-            );
-          })}
+        <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-4">
+          {navSections.map((section) => (
+            <div key={section.label} className="space-y-1">
+              <div className="px-3 text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
+                {section.label}
+              </div>
+              {section.items.map((item) => {
+                const Icon = item.icon;
+                const isActive = currentPage === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => onNavigate(item.id)}
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                      isActive
+                        ? "bg-cyan-500/10 text-cyan-400 border-l-2 border-cyan-400"
+                        : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+                    }`}
+                  >
+                    <Icon size={18} className="shrink-0" />
+                    <span className="truncate">{t(language, item.id)}</span>
+                  </button>
+                );
+              })}
+            </div>
+          ))}
         </nav>
 
         {/* Footer disclaimer */}

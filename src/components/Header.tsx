@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { Radio, Globe, RefreshCw } from "lucide-react";
+import { Radio, Globe, RefreshCw, Wifi, WifiOff } from "lucide-react";
 import { t } from "@/data/translations";
 import { formatDateTime } from "@/utils/format";
 import { riskTextClass } from "@/utils/risk";
 import { DataStatusBadge } from "./DataStatusBadge";
 import type { Language, DataStatus } from "@/types";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 interface HeaderProps {
   language: Language;
@@ -18,6 +19,7 @@ interface HeaderProps {
 
 export function Header({ language, onLanguageChange, regionScore, dataStatus, onRefresh, loading, lastRefresh }: HeaderProps) {
   const [now, setNow] = useState(new Date());
+  const online = useOnlineStatus();
 
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 1000);
@@ -64,11 +66,25 @@ export function Header({ language, onLanguageChange, regionScore, dataStatus, on
             <RefreshCw size={14} className={`text-slate-400 ${loading ? "animate-spin" : ""}`} />
           </button>
 
-          {/* System online */}
-          <div className="flex items-center gap-1.5 px-2 sm:px-3 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-            <Radio size={14} className="text-emerald-400 animate-pulse" />
-            <span className="text-xs font-medium text-emerald-400 hidden sm:inline">
-              {t(language, "systemOnline")}
+          {/* Online / Offline indicator */}
+          <div
+            className={`flex items-center gap-1.5 px-2 sm:px-3 py-1 rounded-lg border ${
+              online
+                ? "bg-emerald-500/10 border-emerald-500/20"
+                : "bg-red-500/10 border-red-500/20"
+            }`}
+          >
+            {online ? (
+              <Wifi size={14} className="text-emerald-400 animate-pulse" />
+            ) : (
+              <WifiOff size={14} className="text-red-400" />
+            )}
+            <span
+              className={`text-xs font-medium hidden sm:inline ${
+                online ? "text-emerald-400" : "text-red-400"
+              }`}
+            >
+              {online ? "ONLINE" : "OFFLINE"}
             </span>
           </div>
 

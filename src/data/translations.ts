@@ -10,6 +10,12 @@ type TranslationKey =
   | "analytics"
   | "emergency"
   | "about"
+  | "register"
+  | "myalerts"
+  | "alert-settings"
+  | "alert-history"
+  | "emergency-info"
+  | "admin"
   | "systemOnline"
   | "demoMode"
   | "demoDisclaimer"
@@ -43,6 +49,12 @@ export const translations: Record<Language, TranslationDict> = {
     analytics: "Analytics",
     emergency: "Emergency Response",
     about: "About",
+    register: "Get Protected",
+    myalerts: "My Alerts",
+    "alert-settings": "Alert Settings",
+    "alert-history": "Alert History",
+    "emergency-info": "Safety Info",
+    admin: "Admin Panel",
     systemOnline: "System Online",
     demoMode: "PROTOTYPE / EARLY-WARNING RESEARCH SYSTEM",
     demoDisclaimer: "Not for real-world emergency decisions. Follow official disaster-management authorities.",
@@ -73,6 +85,12 @@ export const translations: Record<Language, TranslationDict> = {
     analytics: "विश्लेषण",
     emergency: "आपातकालीन प्रतिक्रिया",
     about: "परिचय",
+    register: "सुरक्षा प्राप्त करें",
+    myalerts: "मेरे अलर्ट",
+    "alert-settings": "अलर्ट सेटिंग्स",
+    "alert-history": "अलर्ट इतिहास",
+    "emergency-info": "सुरक्षा जानकारी",
+    admin: "एडमिन पैनल",
     systemOnline: "सिस्टम ऑनलाइन",
     demoMode: "प्रोटोटाइप / प्रारंभिक चेतावनी अनुसंधान प्रणाली",
     demoDisclaimer: "वास्तविक आपातकालीन निर्णयों के लिए नहीं। आधिकारिक आपदा प्रबंधन अधिकारियों का पालन करें।",
@@ -103,6 +121,12 @@ export const translations: Record<Language, TranslationDict> = {
     analytics: "বিশ্লেষণ",
     emergency: "জৰুৰীকালীন প্ৰতিক্ৰিয়া",
     about: "বিষয়ে",
+    register: "সুৰক্ষা লওক",
+    myalerts: "মোৰ সতৰ্কতা",
+    "alert-settings": "সতৰ্কতা ছেটিংছ",
+    "alert-history": "সতৰ্কতা ইতিহাস",
+    "emergency-info": "সুৰক্ষা তথ্য",
+    admin: "এডমিন পেনেল",
     systemOnline: "চিছটেম অনলাইন",
     demoMode: "প্ৰটটাইপ / প্ৰাৰম্ভিক সতৰ্কতা গৱেষণা ব্যৱস্থা",
     demoDisclaimer: "বাস্তৱ জৰুৰীকালীন সিদ্ধান্তৰ বাবে নহয়। আধিকাৰিক দুৰ্যোগ ব্যৱস্থাপনা কৰ্তৃপক্ষক অনুসৰণ কৰক।",

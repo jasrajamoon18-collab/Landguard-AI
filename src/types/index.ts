@@ -25,7 +25,13 @@ export type PageId =
   | "locations"
   | "analytics"
   | "emergency"
-  | "about";
+  | "about"
+  | "register"
+  | "myalerts"
+  | "alert-settings"
+  | "alert-history"
+  | "emergency-info"
+  | "admin";
 
 export type Language = "en" | "hi" | "as";
 

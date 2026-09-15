@@ -177,6 +177,19 @@ export function AboutPage() {
         </div>
       </section>
 
+      {/* Real-world limitation */}
+      <section className="rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-5">
+        <h2 className="text-lg font-semibold text-yellow-400 mb-2 flex items-center gap-2">
+          <Shield size={20} /> Communication & Offline Limitation
+        </h2>
+        <p className="text-sm text-slate-400 leading-relaxed">
+          LANDGUARD requires a network or cellular communication channel to deliver a new remote alert.
+          Offline mode allows users to access previously cached warnings and safety information.
+          SMS/cellular emergency delivery requires a connected telecom/SMS service.
+          A website cannot send a completely new notification to a phone that has absolutely no communication connectivity.
+        </p>
+      </section>
+
       {/* Demo disclaimer */}
       <section className="rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-5">
         <h2 className="text-lg font-semibold text-yellow-400 mb-2 flex items-center gap-2">
