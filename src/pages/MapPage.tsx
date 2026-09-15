@@ -104,15 +104,25 @@ export function MapPage({ locations, onSelectLocation, dataStatus }: MapPageProp
       <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
         <h2 className="text-sm font-semibold text-slate-400 mb-3">Locations on Map ({filtered.length})</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-          {filtered.map((loc) => (
+          {filtered.map((loc) => {
+            const imerg = loc.imerg;
+            const statusColor = loc.dataStatus === "LIVE" ? "text-emerald-400" : loc.dataStatus === "ERROR" ? "text-red-400" : "text-yellow-400";
+            return (
             <button
               key={loc.id}
               onClick={() => handleSelect(loc.id)}
               className="flex items-center justify-between p-3 rounded-lg bg-slate-800/40 hover:bg-slate-800/80 transition-colors text-left"
             >
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <div className="text-sm font-medium text-slate-200 truncate">{loc.name}</div>
                 <div className="text-xs text-slate-500">{loc.state}</div>
+                {imerg && (
+                  <div className="text-xs text-slate-400 mt-1 flex items-center gap-2">
+                    <span>24h: <b className="text-blue-400">{imerg.precipitation24h.toFixed(1)} mm</b></span>
+                    <span>3d: <b>{imerg.precipitation3d.toFixed(0)} mm</b></span>
+                    <span className={statusColor + " font-semibold"}>{imerg.dataStatus}</span>
+                  </div>
+                )}
               </div>
               <div
                 className="flex items-center justify-center w-8 h-8 rounded-full shrink-0 ml-2 text-xs font-bold text-white"
@@ -121,7 +131,8 @@ export function MapPage({ locations, onSelectLocation, dataStatus }: MapPageProp
                 {loc.riskScore}
               </div>
             </button>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

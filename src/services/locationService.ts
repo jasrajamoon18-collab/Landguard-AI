@@ -54,13 +54,15 @@ export async function buildLocation(locationId: string): Promise<Location> {
   const soilMoisture = fb?.soilMoisture ?? 65;
 
   // Use IMERG 24h precipitation as the primary rainfall input.
-  // If IMERG is FALLBACK, fall back to weather service rainfall.
-  const imergLive = imerg.dataStatus === "LIVE";
-  const primaryRainfall = imergLive ? imerg.precipitation24h : weather.rainfall;
+  // IMERG provides rainfall whether LIVE or FALLBACK — the status
+  // tells the user whether it's real NASA data or demo data.
+  // Only fall back to weather service rainfall if IMERG errored entirely.
+  const imergUsable = imerg.dataStatus === "LIVE" || imerg.dataStatus === "FALLBACK";
+  const primaryRainfall = imergUsable ? imerg.precipitation24h : weather.rainfall;
 
   // Determine overall data status
-  // Status is LIVE when IMERG is live (rainfall is the primary trigger)
-  const overallStatus: DataStatus = imergLive
+  // LIVE when IMERG is LIVE, FALLBACK when IMERG is FALLBACK, ERROR otherwise
+  const overallStatus: DataStatus = imerg.dataStatus === "LIVE"
     ? "LIVE"
     : imerg.dataStatus === "ERROR"
       ? "ERROR"

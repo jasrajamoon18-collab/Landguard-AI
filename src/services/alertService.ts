@@ -89,8 +89,15 @@ export function generateAlertsFromLocations(locations: Location[]): Alert[] {
 
 function buildFactors(loc: Location): string[] {
   const factors: string[] = [];
-  if (loc.rainfall > 100) factors.push("Heavy rainfall");
-  else if (loc.rainfall > 70) factors.push("Moderate to heavy rainfall");
+  const imerg = loc.imerg;
+  const rain24h = imerg?.precipitation24h ?? loc.rainfall;
+  const rain3d = imerg?.precipitation3d ?? loc.rainfall * 1.8;
+  const rain7d = imerg?.precipitation7d ?? loc.rainfall * 3.2;
+
+  if (rain24h > 100) factors.push("Heavy 24h rainfall (NASA IMERG)");
+  else if (rain24h > 70) factors.push("Moderate 24h rainfall (NASA IMERG)");
+  if (rain3d > 200) factors.push("Sustained 3-day rainfall");
+  if (rain7d > 400) factors.push("Prolonged 7-day rainfall");
   if (loc.soilMoisture > 75) factors.push("High soil moisture");
   if (loc.groundMovement > 5) factors.push("Increasing ground movement");
   if (loc.slope > 30) factors.push("Steep terrain");
@@ -100,7 +107,12 @@ function buildFactors(loc: Location): string[] {
 
 function buildReason(loc: Location): string {
   const parts: string[] = [];
-  if (loc.rainfall > 100) parts.push("heavy rainfall");
+  const imerg = loc.imerg;
+  const rain24h = imerg?.precipitation24h ?? loc.rainfall;
+  const rain3d = imerg?.precipitation3d ?? loc.rainfall * 1.8;
+
+  if (rain24h > 100) parts.push("heavy 24h rainfall");
+  if (rain3d > 200) parts.push("sustained 3-day rainfall");
   if (loc.soilMoisture > 75) parts.push("high soil moisture");
   if (loc.groundMovement > 5) parts.push("increasing ground movement");
   if (loc.slope > 30) parts.push("steep terrain");

@@ -68,13 +68,17 @@ export function RiskMap({
       const imerg = loc.imerg;
       const imergSection = imerg
         ? `<div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #e2e8f0; font-size: 11px; color: #475569; line-height: 1.6;">
-             <div style="font-weight: 600; color: #0891b2; margin-bottom: 4px;">NASA IMERG Rainfall</div>
+             <div style="font-weight: 600; color: #0891b2; margin-bottom: 4px; display: flex; align-items: center; justify-content: space-between;">
+               <span>NASA IMERG Rainfall</span>
+               <span style="font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 8px; color: ${imerg.dataStatus === "LIVE" ? "#22c55e" : "#eab308"}; border: 1px solid ${imerg.dataStatus === "LIVE" ? "#22c55e" : "#eab308"};">${imerg.dataStatus}</span>
+             </div>
              <div>30 min: <b>${imerg.precipitation30min.toFixed(1)} mm</b></div>
              <div>3 hour: <b>${imerg.precipitation3h.toFixed(1)} mm</b></div>
              <div>24 hour: <b>${imerg.precipitation24h.toFixed(1)} mm</b></div>
              <div>3 day: <b>${imerg.precipitation3d.toFixed(1)} mm</b></div>
              <div>7 day: <b>${imerg.precipitation7d.toFixed(1)} mm</b></div>
              <div style="margin-top: 4px; font-size: 10px; color: #94a3b8;">${imerg.product} · ${imerg.run}</div>
+             <div style="font-size: 10px; color: #94a3b8;">Observed: ${new Date(imerg.observationTime).toISOString().slice(0, 16).replace("T", " ")} UTC</div>
            </div>`
         : "";
 
